@@ -41,22 +41,11 @@ upgrade() ->
 %% @spec init([]) -> SupervisorTree
 %% @doc supervisor callback.
 init([]) ->
-    Ip = case os:getenv("MOCHIWEB_IP") of false -> "0.0.0.0"; Any -> Any end,
-    WebConfig = [
-         {ip, Ip},
-                 {port, 8000},
-                 {docroot, errdb_web_deps:local_path(["priv", "www"])}],
+    {ok, WebConfig} = application:get_env(mochiweb),
+	
+	io:format("~p~n", [WebConfig]),
     Web = {errdb_web_web,
            {errdb_web_web, start, [WebConfig]},
            permanent, 5000, worker, dynamic},
+    {ok, {{one_for_one, 10, 10}, [Web]}}.
 
-    Processes = [Web],
-    {ok, {{one_for_one, 10, 10}, Processes}}.
-
-
-%%
-%% Tests
-%%
--include_lib("eunit/include/eunit.hrl").
--ifdef(TEST).
--endif.

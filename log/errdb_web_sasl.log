@@ -1,0 +1,72 @@
+
+=PROGRESS REPORT==== 22-Feb-2012::14:32:22 ===
+          supervisor: {local,sasl_safe_sup}
+             started: [{pid,<0.43.0>},
+                       {name,alarm_handler},
+                       {mfargs,{alarm_handler,start_link,[]}},
+                       {restart_type,permanent},
+                       {shutdown,2000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 22-Feb-2012::14:32:22 ===
+          supervisor: {local,sasl_safe_sup}
+             started: [{pid,<0.44.0>},
+                       {name,overload},
+                       {mfargs,{overload,start_link,[]}},
+                       {restart_type,permanent},
+                       {shutdown,2000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 22-Feb-2012::14:32:22 ===
+          supervisor: {local,sasl_sup}
+             started: [{pid,<0.42.0>},
+                       {name,sasl_safe_sup},
+                       {mfargs,
+                           {supervisor,start_link,
+                               [{local,sasl_safe_sup},sasl,safe]}},
+                       {restart_type,permanent},
+                       {shutdown,infinity},
+                       {child_type,supervisor}]
+
+=PROGRESS REPORT==== 22-Feb-2012::14:32:22 ===
+          supervisor: {local,sasl_sup}
+             started: [{pid,<0.45.0>},
+                       {name,release_handler},
+                       {mfargs,{release_handler,start_link,[]}},
+                       {restart_type,permanent},
+                       {shutdown,2000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 22-Feb-2012::14:32:22 ===
+         application: sasl
+          started_at: errdb_web@opengoss
+
+=PROGRESS REPORT==== 22-Feb-2012::14:32:22 ===
+          supervisor: {local,crypto_sup}
+             started: [{pid,<0.55.0>},
+                       {name,crypto_server},
+                       {mfargs,{crypto_server,start_link,[]}},
+                       {restart_type,permanent},
+                       {shutdown,2000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 22-Feb-2012::14:32:22 ===
+         application: crypto
+          started_at: errdb_web@opengoss
+
+=PROGRESS REPORT==== 22-Feb-2012::14:32:22 ===
+          supervisor: {local,errdb_web_sup}
+             started: [{pid,<0.60.0>},
+                       {name,errdb_web_web},
+                       {mfargs,
+                           {errdb_web_web,start,
+                               [[{ip,"0.0.0.0"},
+                                 {port,8090},
+                                 {docroot,"var"}]]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 22-Feb-2012::14:32:22 ===
+         application: errdb_web
+          started_at: errdb_web@opengoss

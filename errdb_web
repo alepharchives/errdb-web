@@ -1,0 +1,114 @@
+#!/bin/bash
+
+POLL=true
+SMP=enable
+ERL=erl
+NODE_NAME=errdb_web
+ROOTDIR=`cd $(dirname $0); pwd`
+EBINS="$ROOTDIR/ebin"
+ERL_LIBS=lib
+
+ARGS=                                                                                                                                                                                                       
+while [ $# -ne 0 ] ; do                                                                                                                                                                                     
+    PARAM=$1                                                                                                                                                                                                
+    shift                                                                                                                                                                                                   
+    case $PARAM in                                                                                                                                                                                          
+        --) break ;;                                                                                                                                                                                        
+        --node) NODE_NAME=$1; shift ;;                                                                                                                                                                      
+        --db_node) DB_NODE=$1; shift ;;                                                                                                                                                                      
+        *) ARGS="$ARGS $PARAM" ;;                                                                                                                                                                           
+    esac                                                                                                                                                                                                    
+done          
+
+# define environment variables
+ERRDB_HOME=$ROOTDIR
+DATETIME=`date "+%Y%m%d-%H%M%S"`
+ERRDB_WEB_CONFIG="${ROOTDIR}/etc/errdb_web"
+ERRDB_LOG="${ROOTDIR}/log"
+SASL_LOG_PATH="$ERRDB_LOG/${NODE_NAME}_sasl.log"
+ERL_CRASH_DUMP="$ERRDB_LOG/${NODE_NAME}_crash_$DATETIME.dump"
+ERRDB_WEBLOG_LEVEL=3
+ERRDB_WEBLOG_PATH="$ERRDB_LOG/${NODE_NAME}.log"
+RUNAPP=errdb_web
+CTLAPP=errdb_web_ctl
+
+# export global variables
+export ERRDB_HOME
+export SASL_LOG_PATH
+export ERL_CRASH_DUMP
+export ERL_LIBS
+
+DETACHED="-noinput -detached"
+ERLANG_OPTS="-smp $SMP +K $POLL +A 32 "
+
+[ -d $ERRDB_LOG ] || mkdir -p $ERRDB_LOG
+
+# start server
+# $DETACHED \
+start ()
+{
+    $ERL $ERLANG_OPTS \
+    -sname $NODE_NAME \
+    -pa $EBINS \
+    -setcookie public \
+	-config $ERRDB_WEB_CONFIG \
+	-sasl sasl_error_logger \{file,\"$SASL_LOG_PATH\"\} \
+	-boot start_sasl \
+	-s $RUNAPP start -log_level $ERRDB_WEBLOG_LEVEL -log_path $ERRDB_WEBLOG_PATH
+}
+
+stop()
+{
+    $ERL \
+	-noinput -sname errdb_web_ctl \
+    -pa $EBINS \
+    -setcookie public \
+    -s errdb_web_ctl -extra $NODE_NAME stop
+}
+
+# status
+status ()
+{
+    $ERL \  
+    -noinput -sname errdb_ctl \
+    -pa $EBINS \
+    -setcookie public \
+    -s errdb_web_ctl -extra $NODE_NAME status
+}
+
+# common control function
+ctl ()
+{
+    $ERL \
+      -sname errdb_web_ctl \
+      -noinput \
+      -setcookie public \
+      -boot start_clean \
+      -pa $EBINS \
+      -s ${CTLAPP} -extra $NODE_NAME $@
+    result=$?
+    case $result in
+    0) :;;
+    *) usage;;
+    esac
+    return $result
+}
+
+# display ctl usage
+usage ()
+{
+    echo ""
+    echo "Commands to start an errdb web:"
+    echo "  start  Start errdb web"
+    echo "  stop   Stop errdb web"
+    echo "  status Status of errdb"  
+    echo ""
+}
+
+case $ARGS in
+    ' start') start;;
+    ' stop') stop;;
+    ' status') status;;
+    *) ctl $ARGS;;
+esac
+

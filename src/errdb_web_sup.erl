@@ -43,7 +43,6 @@ upgrade() ->
 init([]) ->
     {ok, WebConfig} = application:get_env(mochiweb),
 	
-	io:format("~p~n", [WebConfig]),
     Web = {errdb_web_web,
            {errdb_web_web, start, [WebConfig]},
            permanent, 5000, worker, dynamic},

@@ -1,12 +1,13 @@
 {application, errdb_web,
  [{description, "errdb_web"},
-  {vsn, "0.01"},
+  {vsn, "0.6"},
   {modules, [
     errdb_web,
     errdb_web_app,
     errdb_web_sup,
     errdb_web_web,
-    errdb_web_deps
+    errdb_web_deps,
+	errdb_web_ctl
   ]},
   {registered, []},
   {mod, {errdb_web_app, []}},

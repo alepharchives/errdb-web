@@ -2,3 +2,4 @@ ebin/*.beam
 ebin/*.app
 log/*.dump
 log/*.log
+lib/*
